@@ -2,6 +2,9 @@ import { useState } from 'react'
 import SectionHeader from '../components/SectionHeader'
 import { submitLead } from '../lib/leadCapture'
 
+const calendarBaseUrl = import.meta.env.VITE_CALENDAR_EMBED_URL || ''
+const hasCalendarUrl = Boolean(calendarBaseUrl)
+
 function ContactPage() {
   const [status, setStatus] = useState({ type: '', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -105,6 +108,30 @@ function ContactPage() {
           </p>
         )}
       </form>
+
+      <div className="mt-8 rounded-2xl border border-indigo-300/30 bg-indigo-500/10 p-6">
+        <p className="text-sm uppercase tracking-[0.18em] text-indigo-200">Prefer to book directly?</p>
+        {hasCalendarUrl ? (
+          <>
+            <p className="mt-3 text-slate-300">
+              Skip the form and lock in a time on the calendar.
+            </p>
+            <a
+              href={calendarBaseUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex rounded-full border border-indigo-300/50 px-5 py-2 text-sm font-semibold text-indigo-100 transition hover:border-indigo-200"
+            >
+              Open booking calendar
+            </a>
+          </>
+        ) : (
+          <p className="mt-3 text-slate-300">
+            Add <code>VITE_CALENDAR_EMBED_URL</code> to enable direct booking from this
+            section.
+          </p>
+        )}
+      </div>
     </section>
   )
 }

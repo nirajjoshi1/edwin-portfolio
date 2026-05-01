@@ -1,42 +1,47 @@
-import { useState } from 'react'
 import SectionHeader from '../components/SectionHeader'
-import { submitLead } from '../lib/leadCapture'
+
+const calendarBaseUrl = import.meta.env.VITE_CALENDAR_EMBED_URL || ''
+const hasCalendarUrl = Boolean(calendarBaseUrl)
+const calendlyUrl = hasCalendarUrl
+  ? calendarBaseUrl.includes('?')
+    ? `${calendarBaseUrl}&hide_gdpr_banner=1`
+    : `${calendarBaseUrl}?hide_gdpr_banner=1`
+  : ''
+
+const socialLinks = [
+  {
+    label: 'WhatsApp',
+    href: 'https://wa.me/19145134730',
+    meta: '+1 (914) 513-4730',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
+        <path d="M16.74 13.96c-.27-.13-1.6-.79-1.85-.88-.25-.09-.43-.13-.61.14-.18.27-.7.88-.86 1.06-.16.18-.31.2-.58.07-.27-.13-1.12-.41-2.14-1.31-.79-.7-1.33-1.57-1.49-1.84-.16-.27-.02-.42.12-.55.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.04-.34-.02-.47-.07-.13-.61-1.47-.84-2.01-.22-.53-.44-.46-.61-.47h-.52c-.18 0-.47.07-.72.34-.25.27-.95.93-.95 2.27 0 1.33.97 2.62 1.1 2.8.13.18 1.9 2.89 4.6 4.05.64.28 1.15.45 1.54.58.65.21 1.24.18 1.71.11.52-.08 1.6-.65 1.83-1.28.22-.63.22-1.17.16-1.28-.07-.11-.25-.18-.52-.31Z" />
+        <path d="M12.03 2.01a9.98 9.98 0 0 0-8.65 14.97L2 22l5.17-1.36a9.97 9.97 0 0 0 4.85 1.24h.01a9.99 9.99 0 0 0 0-19.97Zm0 18.16h-.01a8.16 8.16 0 0 1-4.16-1.14l-.3-.18-3.06.8.82-2.99-.2-.31a8.18 8.18 0 1 1 6.91 3.82Z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Facebook',
+    href: 'https://www.facebook.com/eddie.torres.76141',
+    meta: 'eddie.torres.76141',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
+        <path d="M13.5 21v-7h2.34l.35-2.73H13.5V9.53c0-.79.22-1.33 1.35-1.33h1.44V5.76c-.25-.03-1.1-.11-2.1-.11-2.08 0-3.5 1.27-3.5 3.6v2.02H8.33V14h2.36v7h2.81Z" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Email',
+    href: 'mailto:edwin@torrescopy.com',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
+        <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5Z" />
+      </svg>
+    ),
+  },
+]
 
 function BookCallPage() {
-  const [status, setStatus] = useState({ type: '', message: '' })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const calendlyUrl =
-    import.meta.env.VITE_CALENDAR_EMBED_URL || 'https://calendly.com/'
-
-  async function handleSubmit(event) {
-    event.preventDefault()
-    setIsSubmitting(true)
-    setStatus({ type: '', message: '' })
-
-    const formData = new FormData(event.currentTarget)
-    const payload = {
-      source: 'book-a-call',
-      name: formData.get('name'),
-      email: formData.get('email'),
-      notes: formData.get('notes'),
-      submittedAt: new Date().toISOString(),
-    }
-
-    const result = await submitLead(payload)
-    setStatus({
-      type: result.ok ? 'success' : 'error',
-      message: result.ok
-        ? 'Request sent. Now pick your preferred slot below.'
-        : result.message,
-    })
-
-    if (result.ok) {
-      event.currentTarget.reset()
-    }
-
-    setIsSubmitting(false)
-  }
-
   return (
     <section className="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">
       <SectionHeader
@@ -45,61 +50,65 @@ function BookCallPage() {
         description="Short strategy call focused on your offer, messaging, and funnel performance."
       />
 
-      <div className="mt-10 grid gap-6 rounded-2xl border border-white/10 bg-white/5 p-6 md:grid-cols-2">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">Quick intake</h3>
-          <input
-            type="text"
-            name="name"
-            required
-            placeholder="Your name"
-            className="w-full rounded-xl border border-white/20 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-indigo-400 transition focus:ring"
-          />
-          <input
-            type="email"
-            name="email"
-            required
-            placeholder="you@company.com"
-            className="w-full rounded-xl border border-white/20 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-indigo-400 transition focus:ring"
-          />
-          <textarea
-            name="notes"
-            rows="4"
-            placeholder="What do you need help converting?"
-            className="w-full rounded-xl border border-white/20 bg-slate-950 px-4 py-3 text-slate-100 outline-none ring-indigo-400 transition focus:ring"
-          />
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="rounded-full bg-indigo-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isSubmitting ? 'Sending...' : 'Send Request'}
-          </button>
-          {status.message && (
-            <p
-              className={`text-sm ${
-                status.type === 'success' ? 'text-emerald-300' : 'text-rose-300'
-              }`}
-            >
-              {status.message}
-            </p>
-          )}
-        </form>
+      <div className="mt-10 grid gap-6 rounded-2xl border border-white/10 bg-white/5 p-6 md:grid-cols-2 md:items-start">
+        <div className="self-start rounded-2xl border border-white/10 bg-slate-950/60 p-6">
+          <h3 className="text-lg font-semibold text-white">Connect on social</h3>
+          <p className="mt-2 text-sm text-slate-300">
+            Reach out directly on any platform below.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {socialLinks.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                target={item.href.startsWith('http') ? '_blank' : undefined}
+                rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
+                className="rounded-xl border border-white/15 bg-white/5 p-4 text-slate-100 transition hover:border-indigo-300/60 hover:bg-white/10"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="rounded-lg bg-indigo-500/15 p-2 text-indigo-300">{item.icon}</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-white">{item.label}</p>
+                    <p className="truncate text-xs text-slate-400">{item.meta}</p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
         <div className="rounded-2xl border border-dashed border-indigo-300/40 bg-indigo-500/10 p-6">
-          <p className="text-sm uppercase tracking-[0.18em] text-indigo-200">
-            Calendar
-          </p>
-          <p className="mt-3 text-slate-300">
-            Connect your scheduler using <code>VITE_CALENDAR_EMBED_URL</code>.
-          </p>
-          <a
-            href={calendlyUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-5 inline-flex rounded-full border border-indigo-300/50 px-4 py-2 text-sm font-semibold text-indigo-100 transition hover:border-indigo-200"
-          >
-            Open Calendar
-          </a>
+          <p className="text-sm uppercase tracking-[0.18em] text-indigo-200">Calendar</p>
+          {hasCalendarUrl ? (
+            <>
+              <p className="mt-3 text-slate-300">Choose your preferred slot directly below.</p>
+              <div className="mt-4 overflow-hidden rounded-xl border border-indigo-300/30 bg-slate-950">
+                <iframe
+                  title="Book a strategy call"
+                  src={calendlyUrl}
+                  className="h-[560px] w-full"
+                  loading="lazy"
+                />
+              </div>
+              <a
+                href={calendarBaseUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex rounded-full border border-indigo-300/50 px-4 py-2 text-sm font-semibold text-indigo-100 transition hover:border-indigo-200"
+              >
+                Open in new tab
+              </a>
+            </>
+          ) : (
+            <>
+              <p className="mt-3 text-slate-300">
+                Add <code>VITE_CALENDAR_EMBED_URL</code> to your environment to show your
+                scheduling calendar here.
+              </p>
+              <p className="mt-2 text-xs text-amber-200/90">
+                Example: <code>https://calendly.com/your-handle/30min</code>
+              </p>
+            </>
+          )}
         </div>
       </div>
 
