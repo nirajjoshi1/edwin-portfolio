@@ -164,8 +164,15 @@ P.S. Here is a testimony from one of my clients Dave. "The truth is I didn't hav
 function PortfolioPage() {
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [activeEmailIndex, setActiveEmailIndex] = useState(0)
+  const [showEmailList, setShowEmailList] = useState(true)
 
   const activeEmail = emails[activeEmailIndex]
+
+  const handleSelectEmail = (idx) => {
+    setActiveEmailIndex(idx)
+    // On mobile, hide the list and show the email content after selecting
+    setShowEmailList(false)
+  }
 
   return (
     <div className="overflow-x-hidden">
@@ -191,8 +198,9 @@ function PortfolioPage() {
 
       <section className="border-t border-white/8">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <article className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 sm:p-8">
-            <div className="grid gap-4 sm:grid-cols-3">
+          <article className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-6 lg:p-8">
+            {/* Meta cards — stack on mobile, 3-col on sm+ */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {[
                 { label: 'Client Type', value: 'Fitness Coach' },
                 { label: 'Goal', value: 'Generate leads and sell a fitness program' },
@@ -212,8 +220,9 @@ function PortfolioPage() {
               </p>
             </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/8 p-6 sm:col-span-2">
+            {/* Landing page + email section — stack on mobile */}
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/8 p-5 sm:col-span-2">
                 <p className="mb-1 text-[0.65rem] font-semibold uppercase tracking-widest text-indigo-400">Landing page positioning</p>
                 <p className="text-lg font-bold leading-snug text-white sm:text-xl">
                   Are you trying to eat healthy but don&apos;t know how?
@@ -255,7 +264,7 @@ You don't have to give up your favorite foods or exercise.`}
                 </p>
                 <button
                   type="button"
-                  onClick={() => setShowEmailModal(true)}
+                  onClick={() => { setShowEmailModal(true); setShowEmailList(true) }}
                   className="mt-4 rounded-full bg-indigo-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-indigo-400"
                 >
                   Click here to view emails
@@ -263,7 +272,8 @@ You don't have to give up your favorite foods or exercise.`}
               </div>
             </div>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {/* Sales page section — stack on mobile */}
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="rounded-xl border border-white/8 bg-slate-950/50 p-5">
                 <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-widest text-slate-500">Sales page promise</p>
                 <p className="text-sm leading-relaxed text-slate-300">
@@ -322,13 +332,28 @@ CTA: CLICK HERE to start getting in shape today.`}
         </div>
       </section>
 
+      {/* ── EMAIL MODAL ── */}
       {showEmailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4">
-          <div className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-2xl border border-white/15 bg-slate-900 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-              <p className="text-sm font-semibold uppercase tracking-wider text-indigo-300">
-                Email Funnel Viewer
-              </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-2 sm:px-4">
+          <div className="flex h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-white/15 bg-slate-900 shadow-2xl sm:h-[90vh]">
+
+            {/* Modal header */}
+            <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
+              {/* Mobile: back button when viewing email content */}
+              <div className="flex items-center gap-3">
+                {!showEmailList && (
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailList(true)}
+                    className="flex items-center gap-1 rounded-md border border-white/20 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10 sm:hidden"
+                  >
+                    ← Back
+                  </button>
+                )}
+                <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300 sm:text-sm">
+                  Email Funnel Viewer
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowEmailModal(false)}
@@ -338,14 +363,22 @@ CTA: CLICK HERE to start getting in shape today.`}
               </button>
             </div>
 
-            <div className="grid max-h-[calc(90vh-65px)] gap-0 md:grid-cols-[260px_1fr]">
-              <div className="overflow-y-auto border-r border-white/10 bg-slate-950/60 p-3">
+            {/* Modal body */}
+            <div className="flex min-h-0 flex-1">
+
+              {/* Sidebar — full width on mobile when list is shown, hidden when reading email */}
+              <div
+                className={`
+                  shrink-0 overflow-y-auto border-r border-white/10 bg-slate-950/60 p-3
+                  ${showEmailList ? 'flex w-full flex-col sm:w-[260px]' : 'hidden sm:flex sm:w-[260px] sm:flex-col'}
+                `}
+              >
                 {emails.map((email, idx) => (
                   <button
                     key={email.subject}
                     type="button"
-                    onClick={() => setActiveEmailIndex(idx)}
-                    className={`mb-2 w-full rounded-lg border px-3 py-2 text-left transition ${
+                    onClick={() => handleSelectEmail(idx)}
+                    className={`mb-2 w-full rounded-lg border px-3 py-3 text-left transition sm:py-2 ${
                       activeEmailIndex === idx
                         ? 'border-indigo-400/40 bg-indigo-500/15'
                         : 'border-white/10 bg-white/5 hover:border-white/20'
@@ -357,15 +390,22 @@ CTA: CLICK HERE to start getting in shape today.`}
                 ))}
               </div>
 
-              <div className="overflow-y-auto p-5">
+              {/* Email content — hidden on mobile when list is shown */}
+              <div
+                className={`
+                  min-w-0 flex-1 overflow-y-auto p-4 sm:p-5
+                  ${showEmailList ? 'hidden sm:block' : 'block'}
+                `}
+              >
                 <p className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
                   Subject
                 </p>
                 <p className="mt-1 text-base font-semibold text-white">{activeEmail.subject}</p>
-                <pre className="mt-4 whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-300">
+                <pre className="mt-4 whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-slate-300">
                   {activeEmail.copy}
                 </pre>
               </div>
+
             </div>
           </div>
         </div>
