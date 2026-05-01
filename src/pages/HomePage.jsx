@@ -29,6 +29,39 @@ const solutions = [
   { label: 'Conversion Messaging', desc: 'Words built around one outcome: buy.' },
 ]
 
+const testimonials = [
+  {
+    quote:
+      'Edwin rebuilt our offer messaging and landing page. Lead quality improved almost immediately.',
+    name: 'Maya R.',
+    role: 'Business Coach',
+    initial: 'M',
+    color: 'bg-purple-500/15 text-purple-400 ring-purple-500/20',
+    metric: 'Lead quality',
+    metricColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20',
+  },
+  {
+    quote:
+      'His email sequence gave our funnel structure. Open rates and booked calls both went up.',
+    name: 'Kevin L.',
+    role: 'Agency Founder',
+    initial: 'K',
+    color: 'bg-blue-500/15 text-blue-400 ring-blue-500/20',
+    metric: 'Open rates & booked calls',
+    metricColor: 'bg-blue-500/10 text-blue-300 border-blue-500/20',
+  },
+  {
+    quote:
+      'Sharp strategy, clear writing, and no fluff. The copy finally matches the value of our product.',
+    name: 'Sophie T.',
+    role: 'SaaS Co-founder',
+    initial: 'S',
+    color: 'bg-emerald-500/15 text-emerald-400 ring-emerald-500/20',
+    metric: 'Messaging clarity',
+    metricColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
+  },
+]
+
 function HomePage() {
   return (
     <div className="overflow-x-hidden">
@@ -206,6 +239,59 @@ function HomePage() {
                 <div className="mt-5 inline-flex items-center gap-2 rounded-lg bg-indigo-500/10 px-4 py-2 text-sm font-medium text-indigo-300">
                   <span className="text-indigo-400">↑</span>
                   {project.result}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TESTIMONIALS ── */}
+      <section className="border-t border-white/8 bg-slate-900/40">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeader
+              eyebrow="Testimonials"
+              title="Client feedback that reflects real conversion gains."
+              description="Coaches, founders, and agencies trust this copy to improve lead quality, response, and sales."
+            />
+            <Link
+              to="/testimonials"
+              className="mb-1 text-sm font-medium text-indigo-400 transition hover:text-indigo-300"
+            >
+              Read all testimonials →
+            </Link>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {testimonials.map((item) => (
+              <article
+                key={item.name}
+                className="group flex flex-col justify-between rounded-2xl border border-white/8 bg-white/[0.04] p-7 transition duration-300 hover:-translate-y-1 hover:border-indigo-500/25 hover:bg-white/[0.07]"
+              >
+                <div>
+                  <span className="mb-4 block text-3xl font-black leading-none text-indigo-500/40 transition group-hover:text-indigo-500/60">
+                    "
+                  </span>
+                  <p className="text-sm leading-relaxed text-slate-300">{item.quote}</p>
+                  <div
+                    className={`mt-5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider ${item.metricColor}`}
+                  >
+                    <span>↑</span>
+                    {item.metric}
+                  </div>
+                </div>
+
+                <div className="mt-6 flex items-center gap-3 border-t border-white/8 pt-5">
+                  <span
+                    className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold ring-1 ${item.color}`}
+                  >
+                    {item.initial}
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-white">{item.name}</p>
+                    <p className="text-xs text-indigo-400">{item.role}</p>
+                  </div>
                 </div>
               </article>
             ))}
